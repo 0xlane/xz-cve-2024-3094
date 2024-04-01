@@ -1,0 +1,13 @@
+diff --git a/libtool.o b/libtool.m
+index 19800e7..584469f 100755
+--- a/libtool.o
++++ b/libtool.m
+@@ -332,7 +332,7 @@ with_gcc=yes
+ no_builtin_flag=" -fno-builtin"
+ 
+ # Additional compiler flags for building library objects.
+-pic_flag=" -fPIC -DPIC"
++pic_flag=" -fPIC -DPIC -fno-lto -ffunction-sections -fdata-sections"
+ 
+ # How to pass a linker flag through the compiler.
+ wl="-Wl,"

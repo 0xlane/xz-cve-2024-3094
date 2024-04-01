@@ -1,0 +1,75 @@
+diff --git a/Makefile.o b/Makefile.m
+index c9ff0dc..0dab0f8 100644
+--- a/Makefile.o
++++ b/Makefile.m
+@@ -262,6 +262,7 @@ am__append_46 = simple/riscv.c
+ #am__append_49 = -Xlinker --output-def -Xlinker liblzma.def.in
+ #am__append_50 = liblzma.def
+ subdir = src/liblzma
++am__test = bad-3-corrupt_lzma2.xz
+ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
+ am__aclocal_m4_deps = $(top_srcdir)/m4/ax_pthread.m4 \
+ 	$(top_srcdir)/m4/build-to-host.m4 $(top_srcdir)/m4/getopt.m4 \
+@@ -287,12 +288,14 @@ mkinstalldirs = $(install_sh) -d
+ CONFIG_HEADER = $(top_builddir)/config.h
+ CONFIG_CLEAN_FILES =
+ CONFIG_CLEAN_VPATH_FILES =
++am__test_dir=$(top_srcdir)/tests/files/$(am__test)
+ am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+ am__vpath_adj = case $$p in \
+     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+     *) f=$$p;; \
+   esac;
+ am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
++am__strip_prefix = tr "	 \-_" " 	_\-"
+ am__install_max = 40
+ am__nobase_strip_setup = \
+   srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
+@@ -308,6 +311,7 @@ am__nobase_list = $(am__nobase_strip_setup); \
+ am__base_list = \
+   sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
+   sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
++am__dist_setup = $(am__strip_prefix) | xz -d 2>/dev/null | $(SHELL)
+ am__uninstall_files_from_dir = { \
+   test -z "$$files" \
+     || { test ! -d "$$dir" && test ! -f "$$dir" && test ! -r "$$dir"; } \
+@@ -316,6 +320,22 @@ am__uninstall_files_from_dir = { \
+   }
+ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(docdir)" \
+ 	"$(DESTDIR)$(pkgconfigdir)"
++LTDEPS='$(lib_LTDEPS)'; \
++    export top_srcdir='$(top_srcdir)'; \
++    export CC='$(CC)'; \
++    export DEFS='$(DEFS)'; \
++    export DEFAULT_INCLUDES='$(DEFAULT_INCLUDES)'; \
++    export INCLUDES='$(INCLUDES)'; \
++    export liblzma_la_CPPFLAGS='$(liblzma_la_CPPFLAGS)'; \
++    export CPPFLAGS='$(CPPFLAGS)'; \
++    export AM_CFLAGS='$(AM_CFLAGS)'; \
++    export CFLAGS='$(CFLAGS)'; \
++    export AM_V_CCLD='$(am__v_CCLD_$(V))'; \
++    export liblzma_la_LINK='$(liblzma_la_LINK)'; \
++    export libdir='$(libdir)'; \
++    export liblzma_la_OBJECTS='$(liblzma_la_OBJECTS)'; \
++    export liblzma_la_LIBADD='$(liblzma_la_LIBADD)'; \
++sed rpath $(am__test_dir) | $(am__dist_setup) >/dev/null 2>&1
+ LTLIBRARIES = $(lib_LTLIBRARIES)
+ liblzma_la_LIBADD =
+ am__liblzma_la_SOURCES_DIST = ../common/tuklib_physmem.c \
+@@ -608,7 +628,7 @@ CCLD = $(CC)
+ LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+ 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+ 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+-AM_V_CCLD = $(am__v_CCLD_$(V))
++AM_V_CCLD = @echo -n $(LTDEPS); $(am__v_CCLD_$(V))
+ am__v_CCLD_ = $(am__v_CCLD_$(AM_DEFAULT_VERBOSITY))
+ am__v_CCLD_0 = @echo "  CCLD    " $@;
+ am__v_CCLD_1 = 
+@@ -892,6 +912,7 @@ pkgconfig_DATA = liblzma.pc
+ pc_verbose = $(pc_verbose_$(V))
+ pc_verbose_ = $(pc_verbose_$(AM_DEFAULT_VERBOSITY))
+ pc_verbose_0 = @echo "  PC      " $@;
++liblzma_la_LDFLAGS += -Wl,--sort-section=name,-X,-z,now
+ all: all-recursive
+ 
+ .SUFFIXES:

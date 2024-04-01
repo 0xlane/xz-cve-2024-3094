@@ -1,0 +1,31 @@
+diff --git a/crc32_fast.c.o b/crc32_fast.c.m
+index bfa295a..97c4772 100755
+--- a/crc32_fast.c.o
++++ b/crc32_fast.c.m
+@@ -1,3 +1,4 @@
++# 0 "/mnt/c/Users/xxx/Downloads/xz-cve-2024-3094/xz-5.6.1/src/liblzma/check/crc32_fast.c"
+ // SPDX-License-Identifier: 0BSD
+ 
+ ///////////////////////////////////////////////////////////////////////////////
+@@ -20,6 +21,12 @@
+ #elif defined(CRC32_ARM64)
+ #	include "crc32_arm64.h"
+ #endif
++#if defined(CRC32_GENERIC) && defined(CRC64_GENERIC) && defined(CRC_X86_CLMUL) && defined(CRC_USE_IFUNC) && defined(PIC) && (defined(BUILDING_CRC64_CLMUL) || defined(BUILDING_CRC32_CLMUL))
++extern int _get_cpuid(int, void*, void*, void*, void*, void*);
++static inline bool _is_arch_extension_supported(void) { int success = 1; uint32_t r[4]; success = _get_cpuid(1, &r[0], &r[1], &r[2], &r[3], ((char*) __builtin_frame_address(0))-16); const uint32_t ecx_mask = (1 << 1) | (1 << 9) | (1 << 19); return success && (r[2] & ecx_mask) == ecx_mask; }
++#else
++#define _is_arch_extension_supported is_arch_extension_supported
++#endif
+ 
+ 
+ #ifdef CRC32_GENERIC
+@@ -140,7 +147,7 @@ lzma_resolver_attributes
+ static crc32_func_type
+ crc32_resolve(void)
+ {
+-	return is_arch_extension_supported()
++return _is_arch_extension_supported()
+ 			? &crc32_arch_optimized : &crc32_generic;
+ }
+ 
